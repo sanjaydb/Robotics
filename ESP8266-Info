@@ -1,0 +1,63 @@
+ESP8266 is Serial-to-WiFi bridge
+
+Its has I/O or GPIO, General Purpose Input/Output pins, It can be used to digital input voltage , read digital voltage
+
+Voltage and current restrictions : it a  3.3V microcontroller. I/O operates at 3.3V. 
+Note : The pins are not 5V tolerant, applying more than 3.6V on any pin will damage the chip.
+The maximum current that can be drawn from a single GPIO pin is 12mA.
+
+Usable pins : It has 17 GPIO pins (0-16), only 11  can be used , because 6 pins (GPIO 6 - 11) are used to connect the flash memory chip. 
+Note: This is the small 8-legged chip right next to the ESP8266. If you try to use one of these pins, you might crash your program.
+GPIO 1 and 3 are used as TX and RX of the hardware Serial port (UART), so in most cases, you can’t use them as normal I/O while sending/receiving serial data.
+
+Boot modes
+As mentioned in the previous chapter, some I/O pins have a special function during boot: They select 1 of 3 boot modes:
+
+GPIO15	GPIO0	GPIO2	Mode
+0V	0V	3.3V	Uart Bootloader
+0V	3.3V	3.3V	Boot sketch (SPI flash)
+3.3V	x	x	SDIO mode (not used for Arduino)
+
+GPIO15 is always pulled low, so you can’t use the internal pull-up resistor. You have to keep this in mind when using GPIO15 as an input to read a switch or 
+connect it to a device with an open-collector (or open-drain) output, like I²C.
+GPIO0 is pulled high during normal operation, so you can’t use it as a Hi-Z input.
+GPIO2 can’t be low at boot, so you can’t connect a switch to it.
+
+Internal pull-up/-down resistors
+GPIO 0-15 all have a built-in pull-up resistor, just like in an Arduino. GPIO16 has a built-in pull-down resistor.
+
+PWM
+the ESP8266 doesn’t support hardware PWM, however, software PWM is supported on all digital pins. The default PWM range is 10-bits @ 1kHz, but this can be 
+hanged (up to >14-bit@1kHz).
+
+Analog input
+Has a single analog input, with an input range of 0 - 1.0V
+Note:If you supply 3.3V, for example, you will damage the chip, If need use use a trimpot as a voltage divider.
+
+The ADC (analog to digital converter) has a resolution of 10 bits.
+
+Communication
+Serial
+The ESP8266 has two hardware UARTS (Serial ports):
+UART0 on pins 1 and 3 (TX0 and RX0 resp.), and UART1 on pins 2 and 8 (TX1 and RX1 resp.), however, GPIO8 is used to connect the flash chip. This means that
+UART1 can only transmit data.
+UART0 also has hardware flow control on pins 15 and 13 (RTS0 and CTS0 resp.). These two pins can also be used as alternative TX0 and RX0 pins.
+
+I²C
+The ESP doesn’t have a hardware TWI (Two Wire Interface), but it is implemented in software. This means that you can use pretty much any two digital pins.
+By default, the I²C library uses pin 4 as SDA and pin 5 as SCL. (The data sheet specifies GPIO2 as SDA and GPIO14 as SCL.) The maximum speed is approximately 450kHz.
+
+pullup registor :  pullup resistor (to +5 V),
+Pulldown registor to ground 
+{pullup resistor (to +5 V), or a pull-down resistor (resistor to ground) on the input, with 10 kΩ being a common value}
+when we evaluate a GPIO input, you can never be sure which state it really has , To counteract this, a GPIO input is helped to a defined ground state.
+In practice, you provide the respective pin with a pull-up or pull-down resistor. Depending on whether the state “high” or “low” is expected by default.
+“pull” this means that the GPIO is “pulled” to a certain level (voltage value)
+As a rule, the operating voltage + VCC is used for this purpose. Pulling down can be achieved by connecting the GPIO pin to ground (GND) through a resistor.
+Normally, values of 10 to 100k Ohm are suitable for pullup and pulldown
+
+ 
+
+
+Ref:
+https://tttapa.github.io/ESP8266/Chap04%20-%20Microcontroller.html#:~:text=The%20ESP8266%20has%2017%20GPIO,you%20might%20crash%20your%20program.
