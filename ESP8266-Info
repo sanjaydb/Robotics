@@ -56,8 +56,40 @@ In practice, you provide the respective pin with a pull-up or pull-down resistor
 As a rule, the operating voltage + VCC is used for this purpose. Pulling down can be achieved by connecting the GPIO pin to ground (GND) through a resistor.
 Normally, values of 10 to 100k Ohm are suitable for pullup and pulldown
 
+
+To enable the pull-down resistor for GPIO16, you have to use INPUT_PULLDOWN_16
+
+To set an output pin high (3.3V) or low (0V),     -> digitalWrite(pin, value)
+To read an input,                                 -> digitalRead(pin);
+To enable PWM on a certain pin,                   -> analogWrite(pin, value); where value a number between 0 and 1023.
+To change the range (bit depth) of the PWM output -> analogWriteRange(new_range);
+The frequency can be changed by using             -> analogWriteFreq(new_frequency);. new_frequency should be between 100 and 1000Hz.
+To get the analog voltage on the analog input     -> analogRead(A0) (0 = 0V, 1023 = 1.0V).
+
+The ESP can also use the ADC to measure the supply voltage (VCC).  include ADC_MODE(ADC_VCC); at the top of the sketch, and use ESP.getVcc(); 
+to actually get the voltage. 
+Note: If you use it to read the supply voltage, you can’t connect anything else to the analog pin.
+
+
+Serial communication
+To use UART0 (TX = GPIO1, RX = GPIO3),  use the Serial object, just like on an Arduino: -> Serial.begin(baud).
+To use the alternative pins (TX = GPIO15, RX = GPIO13), use -> Serial.swap() after Serial.begin.
+To use UART1 (TX = GPIO2), use the Serial1 object.
+All Arduino Stream functions, like read, write, print, println, ... are supported as well.
+
+The execution time of the loop should be maintained under a couple of hundreds of milliseconds to avoid crash.
+If your loop takes longer than this, you will have to explicitly give CPU time to the Wi-Fi/TCP stacks, by using including delay(0); or yield();
+If you don’t, network communication won’t work as expected, and if it’s longer than 3 seconds, the soft WDT (Watch Dog Timer) will reset the ESP.
+If the soft WDT is disabled, after a little over 8 seconds, the hardware WDT will reset the chip.
+
+From a microcontroller’s perspective however, 3 seconds is a very long time (240 million clockcycles), so unless you do some extremely heavy number crunching, 
+or sending extremely long strings over Serial, you won’t be affected by this. Just keep in mind that you add the yield(); inside your for or while loops that 
+could take longer than, say 100ms.
+
+
  
 
 
 Ref:
 https://tttapa.github.io/ESP8266/Chap04%20-%20Microcontroller.html#:~:text=The%20ESP8266%20has%2017%20GPIO,you%20might%20crash%20your%20program.
+https://github.com/espressif/ESP8266_NONOS_SDK
