@@ -8,6 +8,17 @@ myString.substring(from)
 myString.substring(from, to)
 
 
+Interrupt
+PORTB ^= B00100000;  // Toggle bit 5, which maps to pin13
+PORTB is the register controlling pins 8 through 13 on the Uno. 
+Bit 0 controls pin 8, bit 1 is pin 9, and so on. Bit 5 controls pin 13, the built-in LED.
+The ^= operator is an exclusive-or (XOR) 1 = 0 & 0 =1
+
+
+
+
+
+
 
 
 Ref:
