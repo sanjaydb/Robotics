@@ -1,0 +1,33 @@
+Atto - ic
+
+
+
+all sensors are I2C
+GY-80 -> multisensor module
+GY-521 -> multisensor Modue
+Breakout board
+
+GY-80
+-----
+MC5883L -> Magnetormeter -> Address -> 0x1E
+
+L3G4200D -> Gyroscope -> Address -> 0x69
+
+ADXL345 -> Accelerometer -> Address -> 0x53
+
+BMP085 -> Barometer + Thermometer -> Address -> 0x77 
+
+
+GY-521
+------
+MPU 6050 -> Accelerometer + Gyroscope + Thermometer -> Address 0x68
+ The above Address are Read Mode , Including Logic High at R/W
+
+
+ We can get Address , by Offical Adrino web site , i2c_scanner.ch sketch
+
+ After finding the Address, we also ned to find the internal address for thier registers in order to read data from them .
+ 
+
+
+
