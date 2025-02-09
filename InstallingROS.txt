@@ -1,0 +1,281 @@
+Installing ROS (Robot Operating System) on Debian. Still Experimenting 
+
+
+---
+
+# Step 1: Add the ROS Repository
+1. Open a terminal and ensure your system is updated:
+   
+   sudo apt update && sudo apt upgrade -y
+   
+2. Add the official ROS repository:
+   
+   sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+   
+3. Add the repository key:
+   
+   sudo apt install curl -y
+   curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6BADE8868B172B4F42ED6FBAB17C654' | sudo apt-key add -
+   
+
+---
+
+# Step 2: Install ROS
+Now, install the version of ROS you need. The most common versions are:
+
+# Option 1: Install ROS 1 (Melodic/Noetic)
+
+sudo apt update
+sudo apt install ros-noetic-desktop-full -y
+
+
+# Option 2: Install ROS 2 (Foxy/Galactic/Humble)
+
+sudo apt update
+sudo apt install ros-humble-desktop -y
+
+
+---
+
+# Step 3: Set Up the Environment
+After installation, you need to source the ROS environment. Add this to your `.rc`:
+
+echo "source /opt/ros/noetic/setup." >> ~/.rc
+source ~/.rc
+
+For ROS 2, use:
+
+echo "source /opt/ros/humble/setup." >> ~/.rc
+source ~/.rc
+
+
+---
+
+# Step 4: Install Dependencies
+1. Install `rosdep` (to manage dependencies):
+   
+   sudo apt install python3-rosdep -y
+   
+2. Initialize `rosdep`:
+   
+   sudo rosdep init
+   rosdep update
+   
+
+---
+
+# Step 5: Verify Installation
+To check if ROS is installed correctly:
+
+- For ROS 1:
+  
+  roscore
+  
+  If you see ROS core running, it's installed successfully.
+
+- For ROS 2:
+  
+  ros2 doctor
+  
+  This command will check the ROS 2 setup.
+
+---
+
+# Step 6: Create a Catkin Workspace (ROS 1)
+If you plan to develop your own ROS packages, create a workspace:
+
+mkdir -p ~/catkin_ws/src
+cd ~/catkin_ws
+catkin_make
+
+Then source it:
+
+echo "source ~/catkin_ws/devel/setup." >> ~/.rc
+source ~/.rc
+
+
+---
+
+Once ROS is installed on Debian, you can check the installation and create your first project. 
+ Checking ROS 1 (Noetic) and ROS 2 (Humble).
+
+---
+
+# 1️ Verify ROS Installation
+After installation, test if ROS is working:
+
+# For ROS 1 (Noetic)
+1. Open a terminal and run:
+   
+   roscore
+   
+2. If you see ROS Master running, it's working.  
+   Press `CTRL+C` to stop.
+
+# For ROS 2 (Humble)
+1. Run:
+   
+   ros2 doctor
+   
+2. This will check if all ROS components are installed correctly.
+
+---
+
+# 2️ Create a ROS Project (Package)
+A ROS package is where you develop your nodes.
+
+# For ROS 1 (Noetic) - Using Catkin
+# Step 1: Create a Catkin Workspace
+1. Open a terminal and create a workspace:
+   
+   mkdir -p ~/catkin_ws/src
+   cd ~/catkin_ws
+   catkin_make
+   
+2. Source the workspace:
+   
+   source devel/setup.
+   echo "source ~/catkin_ws/devel/setup." >> ~/.rc
+   
+
+# Step 2: Create a New Package
+1. Navigate to `src` and create a package:
+   
+   cd ~/catkin_ws/src
+   catkin_create_pkg my_package std_msgs rospy roscpp
+   
+2. Build the package:
+   
+   cd ~/catkin_ws
+   catkin_make
+   
+3. Source the workspace:
+   
+   source devel/setup.
+   
+Your package is now ready inside `~/catkin_ws/src/my_package/`.
+
+---
+
+# For ROS 2 (Humble) - Using Colcon
+# Step 1: Create a ROS 2 Workspace
+1. Create a workspace and `src` folder:
+   
+   mkdir -p ~/ros2_ws/src
+   cd ~/ros2_ws
+   
+2. Source ROS 2:
+   
+   source /opt/ros/humble/setup.
+   
+
+# Step 2: Create a Package
+1. Move to the `src` directory:
+   
+   cd ~/ros2_ws/src
+   
+2. Create a package using Colcon:
+   
+   ros2 pkg create --build-type ament_cmake my_package
+   
+3. Go back to the workspace root:
+   
+   cd ~/ros2_ws
+   
+
+# Step 3: Build the Package
+1. Run:
+   
+   colcon build --packages-select my_package
+   
+2. Source the workspace:
+   
+   source install/setup.
+   echo "source ~/ros2_ws/install/setup." >> ~/.rc
+   
+
+---
+
+# 3️ Running a ROS Program
+Now, let’s run a simple ROS node.
+
+# For ROS 1 (Noetic)
+1. Open a terminal and start `roscore`:
+   
+   roscore
+   
+2. Open a new terminal and create a simple Python script:
+   
+   nano ~/catkin_ws/src/my_package/scripts/my_node.py
+   
+3. Add this content:
+   python
+   #!/usr/bin/env python3
+   import rospy
+
+   rospy.init_node('my_node', anonymous=True)
+   rospy.loginfo("Hello, ROS!")
+
+   rospy.spin()
+   
+4. Make it executable:
+   
+   chmod +x ~/catkin_ws/src/my_package/scripts/my_node.py
+   
+5. Run the node:
+   
+   rosrun my_package my_node.py
+   
+   
+---
+
+# For ROS 2 (Humble)
+1. Open a terminal and source ROS 2:
+   
+   source ~/ros2_ws/install/setup.
+   
+2. Create a simple Python script:
+   
+   nano ~/ros2_ws/src/my_package/my_node.py
+   
+3. Add this code:
+   python
+   import rclpy
+   from rclpy.node import Node
+
+   class MyNode(Node):
+       def __init__(self):
+           super().__init__('my_node')
+           self.get_logger().info("Hello, ROS 2!")
+
+   def main(args=None):
+       rclpy.init(args=args)
+       node = MyNode()
+       rclpy.spin(node)
+       node.destroy_node()
+       rclpy.shutdown()
+
+   if __name__ == '__main__':
+       main()
+   
+4. Make it executable:
+   
+   chmod +x ~/ros2_ws/src/my_package/my_node.py
+   
+5. Run the node:
+   
+   ros2 run my_package my_node.py
+   
+
+---
+
+#  Summary
+-------------------------------------------------------------------------------------------
+| Task               | ROS 1 (Noetic)                 | ROS 2 (Humble)                    |
+|--------------------|--------------------------------|-----------------------------------|
+| Create Workspace   | `catkin_make`                  | `colcon build`                    |
+| Create Package     | `catkin_create_pkg`            | `ros2 pkg create`                 |
+| Compile Code       | `catkin_make`                  | `colcon build`                    |
+| Run a Node         | `rosrun my_package my_node.py` | `ros2 run my_package my_node.py`  |
+
+We've successfully installed, tested, and created a project in ROS on Debian! 
